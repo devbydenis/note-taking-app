@@ -61,5 +61,12 @@ npx prisma migrate dev --name init
 ```bash
 npm run dev
 ```
-
 App would be run in http://localhost:3000.
+
+
+## ✅ Features
+- User Authentication (Register, Login, Logout)
+- Create personal notes
+- Share notes with other users
+- Publish notes to public
+- Comment on notes
