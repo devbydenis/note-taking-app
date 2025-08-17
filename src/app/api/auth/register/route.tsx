@@ -5,10 +5,14 @@ import { hashPassword } from "@/lib/auth"    // Function hash password yang tadi
 // Handle HTTP POST /api/auth/register
 export async function POST(req: Request) {
   // ambil data dari body request
-  const { name, email, password } = await req.json()
-
+  const { username, email, password } = await req.json()
+  
+  if (username === '' || email === '' || password === '') {
+    return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+  }
+  
   // cek email udah ada di db atau belom
-  const existing = await prisma.user.findUnique({ where: { email } })
+  const existing = await prisma.user?.findUnique({ where: { email: email } })
   if (existing) {
     return NextResponse.json({ error: "Email already registered" }, { status: 400 })
   }
@@ -17,10 +21,10 @@ export async function POST(req: Request) {
   const hashed = hashPassword(password)
 
   // simpan user baru ke DB
-  const user = await prisma.user.create({
-    data: { name, email, password: hashed },
+  const user = await prisma.user?.create({
+    data: { username, email, password: hashed },
   })
 
   // return response sukses (gausah pake password)
-  return NextResponse.json({ id: user.id, email: user.email })
+  return NextResponse.json({ id: user?.id, email: user?.email })
 }
