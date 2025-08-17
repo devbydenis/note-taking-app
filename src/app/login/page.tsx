@@ -99,7 +99,8 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="w-full bg-gray-900 text-white p-2 rounded hover:bg-gray-800 cursor-pointer font-bold"
+          disabled={isSubmitting}
+          className={`${isSubmitting ? 'opacity-50' : 'bg-gray-900' } w-full text-white p-2 rounded hover:bg-gray-800 cursor-pointer font-bold`}
         >
           Login
         </button>
