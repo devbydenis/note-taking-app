@@ -1,7 +1,15 @@
+import CreateNote from '@/components/CreateNote'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 
 export default function DashboardPage() {
+  const logout = async () => {
+    await fetch('/api/auth/logout', {
+      method: 'POST'
+    })
+
+    location.href = '/login'
+  }
   return (
     <div className="min-h-screen items-center justify-center bg-white">
       <Navbar />
@@ -19,6 +27,7 @@ export default function DashboardPage() {
           </li>
         </ul>
       </div>
+      <CreateNote />
     </div>
   )
 }
