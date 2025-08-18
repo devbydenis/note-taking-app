@@ -1,3 +1,4 @@
+import { TokenPayload } from '@/types/auth'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
@@ -17,22 +18,15 @@ export function comparePassword(password: string, hash: string) {
 }
 
 // generate jwt tokem
-export function generateToken(payload: object) {
+export function generateToken(payload: TokenPayload) {
   console.log('payload to generate token:', payload)
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '10h' })
 }
 
 // verify token jwt
-export function verifyToken(token: string) {
+export function verifyToken(token: string): TokenPayload | null {
   try {
-    const [header, payload] = token.split('.');
-    const decodedHeader = JSON.parse(Buffer.from(header, 'base64').toString());
-    const decodedPayload = JSON.parse(Buffer.from(payload, 'base64').toString());
-    
-    console.log('JWT header:', decodedHeader);
-    console.log('JWT payload:', decodedPayload);
-    
-    const decoded = jwt.verify(token, JWT_SECRET)
+    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload
     console.log('verifying token successful:', decoded)
     return decoded
   } catch (error) {
