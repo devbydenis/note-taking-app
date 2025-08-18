@@ -8,15 +8,8 @@ import Link from 'next/link'
 import { LuArrowLeft } from 'react-icons/lu'
 import Alert from '@/components/Alert'
 import { useState } from 'react'
-
-// 🔹 Schema validasi pakai Zod
-const createNoteSchema = z.object({
-  title: z.string().min(3, 'Title minimal 3 karakter'),
-  content: z.string().min(5, 'Content minimal 5 karakter'),
-  isPublic: z.boolean().optional(),
-})
-
-type CreateNoteForm = z.infer<typeof createNoteSchema>
+import { createNoteSchema } from '@/types/schema'
+import { CreateNoteForm } from '@/types/notes'
 
 export default function CreateNotePage() {
   const router = useRouter()
@@ -41,12 +34,13 @@ export default function CreateNotePage() {
         credentials: 'include',
       })
       const result = await res.json()
-      // console.log("response create note: ", result)
+      console.log("response create note: ", result)
       if (result.success) {
         setShowAlert(true)
         setTimeout(() => {
           router.push('/dashboard')
         }, 2000)
+        
       }
     } catch (error) {
       console.error('Error creating note:', error)
@@ -56,7 +50,7 @@ export default function CreateNotePage() {
   return (
     <div className="relative">
       {showAlert && (
-        <Alert title="Success" message="Note created successfully!" status={showAlert} />
+        <Alert title="Success" message="Note created successfully!" status={true} />
       )}
       <div className="max-w-2xl mx-auto mt-20 bg-white p-6 rounded-xl shadow-md">
         <Link href="/dashboard" className="flex gap-2 mb-5 text-sm font-semibold text-blue-500">
@@ -71,7 +65,7 @@ export default function CreateNotePage() {
             <input
               type="text"
               placeholder="Title"
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full outline-2 outline-gray-300 p-2 rounded focus:outline-gray-700 transition-colors ease-in-out duration-300"
               {...register('title')}
             />
             {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
@@ -81,17 +75,20 @@ export default function CreateNotePage() {
           <div>
             <textarea
               placeholder="Write your note here..."
-              className="w-full border border-gray-300 p-2 rounded min-h-[150px]"
+              className="w-full outline-2 outline-gray-300 p-2 rounded focus:outline-gray-700 transition-colors ease-in-out duration-300 min-h-[150px]"
               {...register('content')}
             />
             {errors.content && <p className="text-sm text-red-500">{errors.content.message}</p>}
           </div>
 
           {/* Checkbox Public */}
-          <label className="flex items-center gap-2">
-            <input type="checkbox" {...register('isPublic')} />
-            <span>Public Note</span>
-          </label>
+          <div className="flex items-center gap-2">
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" {...register('isPublic')} className="sr-only peer" value="" />
+              <div className="group peer bg-white rounded-full duration-300 w-12 h-6 ring-2 ring-gray-500 after:duration-300 after:bg-gray-500 peer-checked:after:bg-gray-900 peer-checked:ring-gray-900 after:rounded-full after:absolute after:h-4 after:w-4 after:top-1 after:left-1 after:flex after:justify-center after:items-center peer-checked:after:translate-x-6 peer-hover:after:scale-95"></div>
+            </label>
+            <p className="font-medium">Public</p>
+          </div>
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-4">

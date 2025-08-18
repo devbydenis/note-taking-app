@@ -2,14 +2,10 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-
-interface NoteProps {
-  id: number;
-  title: string;
-  content: string;
-  isPublic: boolean;
-  createdAt: string;
-}
+import Loader from "./Loader";
+import { NoteProps } from "@/types/notes";
+import { useAuth } from "@/hooks/useAuth";
+import { useState, useEffect } from "react";
 
 // function buat nge-fetch data dari API
 const fetchNotes = async (): Promise<NoteProps[]> => {
@@ -19,7 +15,7 @@ const fetchNotes = async (): Promise<NoteProps[]> => {
   if (!res.ok) throw new Error("Failed to fetch notes");
   
   const response = await res.json();
-  console.log("fetchNOtes", response.data)
+  console.log("fetchNotes", response.data)
   
   if (response.success && Array.isArray(response.data)) {
     return response.data;
@@ -31,21 +27,23 @@ const fetchNotes = async (): Promise<NoteProps[]> => {
   }
 }
 
-export default function NoteList() {
+export default function NoteList({currentUserId}: {currentUserId: string}) {
   const { data: notes, error, isLoading } = useQuery<NoteProps[]>({
     queryKey: ["notes"],
     queryFn: fetchNotes,
   })
   
-  if (isLoading) return <p className="text-gray-500">Loading ...</p>
+  if (isLoading) return <Loader />
   if (error) return <p className="text-red-500">Error loading notes</p>
   
   if (!notes || notes.length === 0) return <p className="text-gray-500">No notes found</p>
   
+  console.log("notes", notes)
   return (
     <ul className='flex flex-col gap-5 w-1/2'>
       {notes.map((note) => (
-        <li key={"key-note-" + note.id} className='bg-gray-100 p-3'>
+          Number(note.userId) == Number(currentUserId) &&
+          <li key={"key-note-" + note.id} className='bg-gray-100 p-3'>
             <Link
                 className="flex rounded gap-5 justify-between" 
                 href={`/notes/${note.id}`}

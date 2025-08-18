@@ -20,11 +20,11 @@ export function comparePassword(password: string, hash: string) {
 // generate jwt tokem
 export function generateToken(payload: TokenPayload) {
   console.log('payload to generate token:', payload)
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '10h' })
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "1d" })
 }
 
 // verify token jwt
-export function verifyToken(token: string): TokenPayload | null {
+export async function verifyToken(token: string): Promise<TokenPayload | null> {
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload
     console.log('verifying token successful:', decoded)

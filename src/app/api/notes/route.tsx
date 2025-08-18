@@ -9,23 +9,20 @@ import { NextResponse } from 'next/server'
 export async function GET(req: Request) {
   try {
     // ambil token dulu dari cookies
-    // const token = req.headers.get('cookie')?.split('token=')[1]
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const token = req.headers.get('cookie')?.split('token=')[1]
+    // const cookieStore = await cookies() // ini gabisa dipake di middleware
+    // const token = cookieStore.get("token")?.value
     const user: string | { id: number } | jwt.JwtPayload | null = token ? verifyToken(token) : null
-
+    
     // ambil list notes dari database
     const notes = await prisma.note.findMany({
       where: {
-        OR: [
-          { isPublic: true },
-          user ? { userId: user.id } : {},
-        ],
+        userId: user?.id,
       },
       include: { user: { select: { id: true, username: true, email: true } } },
       orderBy: { createdAt: 'desc' },
     })
-    return NextResponse.json({ success: true, token, user,  data: notes })
+    return NextResponse.json({ success: true, data: notes })
     
   } catch (error) {
     return NextResponse.json({ success: false, error: 'Failed to query notes' }, { status: 500 })
@@ -35,11 +32,13 @@ export async function GET(req: Request) {
 // CREATE NOTE
 export async function POST(req: Request) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
-    // const token = req.headers.get('cookie')?.split('token=')[1]
-    const user = token ? verifyToken(token) : null
-
+    // const cookieStore = await cookies()
+    // const token = cookieStore.get("token")?.value
+    const token = req.headers.get('cookie')?.split('token=')[1]
+    const userPromise = token ? verifyToken(token) : null
+    const user = await userPromise
+    console.log("USERRRR", user)
+    
     // cek apakah user udah login
     if (!user) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })

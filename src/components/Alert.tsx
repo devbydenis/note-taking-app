@@ -4,9 +4,9 @@ interface AlertProps {
   status?: boolean;
 }
 
-export default function Alert({ title, message }: AlertProps) {
+export default function Alert({ title, message, status }: AlertProps) {
   return (
-    <div role="alert" className={`absolute w-1/2 translate-x-[50%] translate-y-[-85%] rounded-md border border-green-500 bg-white p-4 shadow-sm`}>
+    <div role="alert" className={`absolute w-1/2 translate-x-[50%] translate-y-[-85%] rounded-md border ${status ? 'border-green-600' : 'border-red-600'} bg-white p-4 shadow-sm`}>
       <div className="flex items-start gap-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -14,7 +14,7 @@ export default function Alert({ title, message }: AlertProps) {
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          className="size-6 text-green-600"
+          className={`size-6 ${status ? 'text-green-600' : 'text-red-600'}`}
         >
           <path
             stroke-linecap="round"
