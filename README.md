@@ -73,7 +73,6 @@ App would be run in http://localhost:3000.
 - Publish notes to public
 - Comment on notes
 
-## ERD
 
 ## 🔗 Entity Relationship Diagram (ERD)
 
