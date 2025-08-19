@@ -5,12 +5,14 @@ Users can create personal notes, share them with other users, publish notes publ
 
 
 ## 🚀 Tech Stack
-- **Frontend & Backend**: [Next.js 15](https://nextjs.org/)
+- **Frontend & Backend**: [Next.js 15 (App Router)](https://nextjs.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/) (via Docker)
 - **ORM**: [Prisma](https://www.prisma.io/)
-- **Auth**: NextAuth.js / JWT (TBD)
+- **Auth**: JWT
+- **State Management**: [TanStack Query](https://tanstack.com/query/latest) (data fetching + caching)  
 - **Linting & Formatting**: ESLint + Prettier
+- **Containerization (opsional)**: Docker (untuk database & service dev)
 
 
 ## 📂 Project Structure
@@ -70,3 +72,86 @@ App would be run in http://localhost:3000.
 - Share notes with other users
 - Publish notes to public
 - Comment on notes
+
+## ERD
+
+## 🔗 Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    users {
+        INT id PK
+        STRING username
+        STRING email
+        TEXT password_hash
+        DATETIME created_at
+        DATETIME updated_at
+    }
+
+    notes {
+        INT id PK
+        INT user_id FK
+        STRING title
+        TEXT content
+        BOOLEAN is_public
+        DATETIME created_at
+        DATETIME updated_at
+    }
+
+    note_shares {
+        INT id PK
+        INT note_id FK
+        INT shared_with_user_id FK
+        DATETIME created_at
+    }
+
+    comments {
+        INT id PK
+        INT note_id FK
+        INT user_id FK
+        TEXT content
+        DATETIME created_at
+    }
+
+    %% Relations
+    users ||--o{ notes : "has"
+    users ||--o{ note_shares : "can_receive"
+    notes ||--o{ note_shares : "shared_with"
+    users ||--o{ comments : "writes"
+    notes ||--o{ comments : "has"
+    
+```
+
+## ⛓️ FLOWCHART
+```mermaid
+flowchart TD
+    START([Mulai]) --> A[Login/Register]
+    A --> B{Punya akun?}
+    B -- No --> C[Form Register] --> D[POST /register -> simpan ke tabel users] --> A
+    B -- Yes --> E[Form Login] --> F[POST /login -> validasi + buat session] --> G[Dashboard]
+
+    G --> H[GET /notes?owner=me -> list notes]
+    G --> I[Create Note]
+    I --> J[Isi title, content, is_public]
+    J --> K[POST /notes -> simpan ke notes] --> G
+
+    H --> L[Click Note Detail]
+    L --> M[GET /notes/:id]
+    M --> N{Punya akses?}
+    N -- is_public = true --> O[Tampilkan note + komentar]
+    N -- Owner --> O
+    N -- Ada di note_shares --> O
+    N -- Else --> P[No Access]
+
+    O --> Q[Form Tambah Komentar]
+    Q --> R[POST /notes/:id/comments -> simpan ke comments] --> O
+
+    O --> S[Share Note]
+    S --> T[Masukkan email user]
+    T --> U[POST /notes/:id/share -> insert ke note_shares] --> O
+
+    G --> V[Logout]
+    V --> W[Hapus session -> redirect ke Login]
+    W --> END([Selesai])
+
+```
