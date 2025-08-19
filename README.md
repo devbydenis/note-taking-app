@@ -36,7 +36,7 @@ note-taking-app/
 ## 🛠️ Setup & Installation
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/<your-username>/note-taking-app.git
+git clone https://github.com/devbydenis/note-taking-app.git
 cd note-taking-app
 ```
 ### 2. Install dependencies
