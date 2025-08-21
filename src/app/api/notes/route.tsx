@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     // const cookieStore = await cookies() // ini gabisa dipake di middleware
     // const token = cookieStore.get("token")?.value
     const user: string | { id: number } | jwt.JwtPayload | null = token ? verifyToken(token) : null
-    
+
     // ambil list notes dari database
     const notes = await prisma.note.findMany({
       where: {
@@ -23,7 +23,6 @@ export async function GET(req: Request) {
       orderBy: { createdAt: 'desc' },
     })
     return NextResponse.json({ success: true, data: notes })
-    
   } catch (error) {
     return NextResponse.json({ success: false, error: 'Failed to query notes' }, { status: 500 })
   }
@@ -37,11 +36,15 @@ export async function POST(req: Request) {
     const token = req.headers.get('cookie')?.split('token=')[1]
     const userPromise = token ? verifyToken(token) : null
     const user = await userPromise
-    console.log("USERRRR", user)
-    
+    console.log('USERRRR', user)
+
     // cek apakah user udah login
     if (!user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({
+        success: false,
+        status: 401,
+        error: 'Unauthorized',
+      })
     }
 
     // ambil data dari body
@@ -58,8 +61,19 @@ export async function POST(req: Request) {
       },
     })
 
-    return  NextResponse.json({ success: true, data: note })
+    return NextResponse.json({
+      success: true,
+      status: 200,
+      data: note,
+    })
+    
   } catch (error) {
-    return NextResponse.json({ success: false, error: 'Failed to create note' }, { status: 500 })
+    return NextResponse.json(
+      {
+        success: false,
+        status: 500,
+        error: 'Failed to create note',
+      }
+    )
   }
 }
